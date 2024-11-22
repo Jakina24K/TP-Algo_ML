@@ -32,7 +32,20 @@ def move_tile(puzzle, row, col):
     return False
 
 def check_win(puzzle):
+    """Vérifie si le puzzle est dans l'état de victoire."""
     n = len(puzzle)
-    expected = list(range(1, n * n)) + [0]
-    flat_puzzle = [tile for row in puzzle for tile in row]
-    return flat_puzzle == expected
+    expected_value = 1
+
+    for row in range(n):
+        for col in range(n):
+            # La dernière case doit être 0
+            if row == n - 1 and col == n - 1:
+                if puzzle[row][col] != 0:
+                    return False
+            else:
+                if puzzle[row][col] != expected_value:
+                    return False
+                expected_value += 1
+
+    return True
+

@@ -4,9 +4,9 @@ from ui.game_screen import game_loop
 
 def main():
     pygame.init()
-    n = show_start_screen()  # Affiche l'écran d'accueil et retourne la dimension sélectionnée
+    n, ai_play = show_start_screen()  # Affiche l'écran d'accueil et retourne la dimension sélectionnée
     while True:
-        game_loop(n)  # Lance le jeu pour la dimension sélectionnée
+        game_loop(n, ai_play)  # Lance le jeu pour la dimension sélectionnée
 
 if __name__ == "__main__":
     main()
