@@ -48,4 +48,5 @@ def check_win(puzzle):
                 expected_value += 1
 
     return True
+    
 
