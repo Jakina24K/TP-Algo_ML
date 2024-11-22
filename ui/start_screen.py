@@ -6,7 +6,7 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 400, 400
 def show_start_screen():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("n-Puzzle Menu")
+    pygame.display.set_caption("CHILL Puzzle Menu")
     font = pygame.font.Font(None, 50)
     small_font = pygame.font.Font(None, 36)
     

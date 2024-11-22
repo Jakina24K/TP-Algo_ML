@@ -71,13 +71,19 @@ def solve_puzzle_with_astar(puzzle):
 
     return None  # Pas de solution
 
-def game_loop(n, ai_play):
-    puzzle = create_puzzle(n)
+def game_loop(n, ai_play=False):
+    """Boucle principale du jeu."""
+    try:
+        puzzle = create_puzzle(n)
+    except Exception as e:
+        print(f"Erreur lors de la création du puzzle : {e}")
+        return
+
     screen = pygame.display.set_mode((n * TILE_SIZE, n * TILE_SIZE + 50))
     pygame.display.set_caption(f"n-Puzzle ({n}x{n})")
     font = pygame.font.Font(None, 36)
     back_button_rect = pygame.Rect(10, n * TILE_SIZE + 10, 100, 30)
-    
+
     if ai_play:
         solution = solve_puzzle_with_astar(puzzle)
         for step in solution:
@@ -88,6 +94,8 @@ def game_loop(n, ai_play):
             pygame.time.delay(500)  # Pause entre chaque étape
         show_win_screen(screen, n)  # Affiche "You Win"
         return
+
+    move_count = 0  # Compteur de mouvements
 
     while True:
         for event in pygame.event.get():
@@ -100,17 +108,54 @@ def game_loop(n, ai_play):
                     return  # Retourne à l'écran d'accueil
                 if y < n * TILE_SIZE:
                     row, col = y // TILE_SIZE, x // TILE_SIZE
-                    move_tile(puzzle, row, col)
-                    if check_win(puzzle):
-                        result = show_win_screen(screen, n)
-                        if result == "start_again":
-                            return game_loop(n)  # Relance le jeu avec la même dimension
-                        elif result == "main_menu":
-                            return show_start_screen # Retourne à l'écran d'accueil
+                    if move_tile(puzzle, row, col):  # Déplacement valide
+                        move_count += 1  # Incrémente le compteur
+                        if check_win(puzzle):
+                            result = show_win_screen(screen, n)
+                            if result == "start_again":
+                                return game_loop(n)  # Relance le jeu avec la même dimension
+                            elif result == "main_menu":
+                                return  # Retourne à l'écran d'accueil
 
+        # Vérifier si le joueur a atteint 10 mouvements
+        if move_count == 10:
+            swap_tiles(puzzle, screen)
+            move_count = 0  # Réinitialise le compteur
+
+        # Mettre à jour l'écran
         screen.fill((255, 255, 255))
         draw_grid(screen, puzzle)
-        pygame.draw.rect(screen, (0, 128, 0), back_button_rect)
-        back_text = font.render("SWAP", True, (255, 255, 255))
-        screen.blit(back_text, back_button_rect.topleft)
+
+        # Afficher le compteur de mouvements
+        move_text = font.render(f"Moves: {move_count}", True, (0, 0, 0))
+        screen.blit(move_text, (10, n * TILE_SIZE + 10))
+
         pygame.display.flip()
+
+
+def swap_tiles(puzzle, screen):
+    """Permet au joueur de permuter les valeurs de deux tuiles."""
+    font = pygame.font.Font(None, 36)
+    selected_tiles = []
+
+    while len(selected_tiles) < 2:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                row, col = y // TILE_SIZE, x // TILE_SIZE
+                if 0 <= row < len(puzzle) and 0 <= col < len(puzzle):
+                    selected_tiles.append((row, col))
+                    pygame.draw.rect(
+                        screen, (255, 0, 0),
+                        (col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE), 3
+                    )
+                    pygame.display.flip()
+
+    # Échanger les valeurs
+    (row1, col1), (row2, col2) = selected_tiles
+    puzzle[row1][col1], puzzle[row2][col2] = puzzle[row2][col2], puzzle[row1][col1]
+
+
