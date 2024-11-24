@@ -1,4 +1,7 @@
 import heapq
+import time
+import csv  # Bibliothèque pour écrire dans un fichier CSV
+from datetime import datetime
 
 def solve_puzzle_with_astar(puzzle):
     """Résout le puzzle en utilisant l'algorithme A*."""
@@ -32,14 +35,22 @@ def solve_puzzle_with_astar(puzzle):
                 yield tuple(tuple(row) for row in state)
                 state[nr][nc], state[zero_row][zero_col] = state[zero_row][zero_col], state[nr][nc]
 
+    # Début du calcul
+    start_time = int(time.time() * 1000)
+    
     frontier = [(heuristic(start), 0, start, [])]
     explored = set()
+    move_count = 0  # Nombre de déplacements
 
     while frontier:
         _, cost, current, path = heapq.heappop(frontier)
 
         if current == goal:
-            return path
+            end_time = int(time.time() * 1000)  # Temps de fin
+            execution_time = end_time - start_time  # Temps d'exécution
+            move_count = len(path)  # Nombre de déplacements
+            export_results(execution_time, move_count, success=True)  # Exporter les résultats
+            return path  # Retourner la solution
 
         if current in explored:
             continue
@@ -48,6 +59,31 @@ def solve_puzzle_with_astar(puzzle):
 
         for neighbor in neighbors(current):
             if neighbor not in explored:
-                heapq.heappush(frontier, (cost + 1 + heuristic(neighbor), cost + 1, neighbor, path + [neighbor]))
+                heapq.heappush(frontier, (cost + 1 + heuristic(neighbor), cost + 1, neighbor, path + [neighbor]))         
 
+    # Si pas de solution trouvée
+    end_time = time.time()
+    execution_time = end_time - start_time
+    move_count = 0
+    export_results(execution_time, move_count, success=False)
     return None  # Pas de solution
+
+def export_results(execution_time, move_count, success):
+    """Export les résultats dans un fichier CSV."""
+    # Créer le nom du fichier basé sur la date et l'heure actuelle
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    file_name = f"puzzle_results_{timestamp}.csv"
+
+    # Données à exporter
+    results = [
+        ["Execution Time (ms)", "Move Count", "Success"],
+        [execution_time, move_count, "Yes" if success else "No"]
+    ]
+
+    # Écrire dans le fichier CSV
+    with open(file_name, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerows(results)
+
+    print(f"Les résultats ont été exportés dans le fichier {file_name}")
+
