@@ -9,17 +9,29 @@ TILE_SIZE = 100
 
 def draw_grid(screen, puzzle):
     n = len(puzzle)
-    font = pygame.font.Font(None, TILE_SIZE // 2)
+    font = pygame.font.Font(None, TILE_SIZE // 2)  # Police pour le texte
+
+    # Couleur plus douce pour les contours (gris clair)
+    contour_color = (150, 150, 150)  # Gris clair pour les contours
+
     for row in range(n):
         for col in range(n):
             value = puzzle[row][col]
             rect = pygame.Rect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-            pygame.draw.rect(screen, (200, 200, 200), rect)
-            pygame.draw.rect(screen, (50, 50, 50), rect, 2)
-            if value != 0:
-                text = font.render(str(value), True, (0, 0, 0))
-                text_rect = text.get_rect(center=rect.center)
-                screen.blit(text, text_rect)
+
+            if value == 0:
+                # Case vide en blanc
+                pygame.draw.rect(screen, (255, 255, 255), rect)  # Fond blanc
+            else:
+                # Cases normales en gris clair
+                pygame.draw.rect(screen, (220, 220, 220), rect)  # Fond gris clair
+                text = font.render(str(value), True, (0, 0, 0))  # Texte noir
+                text_rect = text.get_rect(center=rect.center)  # Centrage du texte
+                screen.blit(text, text_rect)  # Affichage du texte
+
+            # Contour de toutes les cases avec une couleur plus douce (gris clair) et une épaisseur plus fine (1)
+            pygame.draw.rect(screen, contour_color, rect, 1)  # Contour avec une couleur plus claire
+
 
 def solve_puzzle_with_astar(puzzle):
     """Résout le puzzle en utilisant A*."""
@@ -96,6 +108,7 @@ def game_loop(n, ai_play=False):
         return
 
     move_count = 0  # Compteur de mouvements
+    swap_mode = False  # Mode d'échange de tuiles
 
     while True:
         for event in pygame.event.get():
@@ -110,6 +123,8 @@ def game_loop(n, ai_play=False):
                     row, col = y // TILE_SIZE, x // TILE_SIZE
                     if move_tile(puzzle, row, col):  # Déplacement valide
                         move_count += 1  # Incrémente le compteur
+                        if move_count == 10:
+                            swap_mode = True  # Passe en mode "SWAP"
                         if check_win(puzzle):
                             result = show_win_screen(screen, n)
                             if result == "start_again":
@@ -118,21 +133,28 @@ def game_loop(n, ai_play=False):
                                 # Rediriger vers l'écran principal
                                 return show_start_screen() # Retourne à l'écran d'accueil
 
-        # Vérifier si le joueur a atteint 10 mouvements
-        if move_count == 10:
-            swap_tiles(puzzle, screen)
-            move_count = 0  # Réinitialise le compteur
-
         # Mettre à jour l'écran
-        screen.fill((255, 255, 255))
+        screen.fill((255, 255, 255))  # Fond de l'écran
+
+        # Si le mode "SWAP" est activé, afficher "SWAP" au lieu de "Moves"
+        if swap_mode:
+            swap_text = font.render("SWAP", True, (255, 0, 0))
+            screen.blit(swap_text, (10, n * TILE_SIZE + 10))
+        else:
+            # Afficher le nombre de mouvements
+            move_text = font.render(f"Moves: {move_count}", True, (0, 0, 0))
+            screen.blit(move_text, (10, n * TILE_SIZE + 10))
+
+        # Dessiner la grille
         draw_grid(screen, puzzle)
 
-        # Afficher le compteur de mouvements
-        move_text = font.render(f"Moves: {move_count}", True, (0, 0, 0))
-        screen.blit(move_text, (10, n * TILE_SIZE + 10))
+        pygame.display.flip()  # Met à jour l'affichage
 
-        pygame.display.flip()
-
+        # Si le mode "SWAP" est activé, effectuer l'échange de tuiles
+        if swap_mode:
+            swap_tiles(puzzle, screen)
+            move_count = 0  # Réinitialise le compteur de mouvements après l'échange
+            swap_mode = False  # Désactive le mode "SWAP"
 
 def swap_tiles(puzzle, screen):
     """Permet au joueur de permuter les valeurs de deux tuiles."""
