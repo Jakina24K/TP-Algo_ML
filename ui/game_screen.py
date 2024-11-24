@@ -103,8 +103,14 @@ def game_loop(n, ai_play=False):
             screen.fill((255, 255, 255))
             draw_grid(screen, puzzle)
             pygame.display.flip()
-            pygame.time.delay(500)  # Pause entre chaque étape
-        show_win_screen(screen, n)  # Affiche "You Win"
+            pygame.time.delay(200)  # Pause entre chaque étape
+        
+        result = show_win_screen(screen, n)
+            
+        if result == "start_again":
+            return game_loop(n)
+        elif result == "main_menu":
+            return show_start_screen()  # Affiche "You Win"
         return
 
     move_count = 0  # Compteur de mouvements
