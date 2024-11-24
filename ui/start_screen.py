@@ -44,14 +44,15 @@ def show_start_screen():
             text_rect = text.get_rect(center=rect.center)
             screen.blit(text, text_rect)
 
-        # Dessiner la case "Let the AI play"
-        pygame.draw.rect(screen, (0, 0, 0), ai_play_checkbox_rect, 2)
-        if ai_play_selected:
-            pygame.draw.line(screen, (0, 128, 0), ai_play_checkbox_rect.topleft, ai_play_checkbox_rect.bottomright, 2)
-            pygame.draw.line(screen, (0, 128, 0), ai_play_checkbox_rect.topright, ai_play_checkbox_rect.bottomleft, 2)
+        # Dessiner la case "Let the AI play" uniquement si "3x3" est sélectionné
+        if selected_dimension == "3x3":
+            pygame.draw.rect(screen, (0, 0, 0), ai_play_checkbox_rect, 2)
+            if ai_play_selected:
+                pygame.draw.line(screen, (0, 128, 0), ai_play_checkbox_rect.topleft, ai_play_checkbox_rect.bottomright, 2)
+                pygame.draw.line(screen, (0, 128, 0), ai_play_checkbox_rect.topright, ai_play_checkbox_rect.bottomleft, 2)
 
-        ai_play_text = small_font.render("Let the AI play", True, (0, 0, 0))
-        screen.blit(ai_play_text, ai_play_text_rect)
+            ai_play_text = small_font.render("Let the AI play", True, (0, 0, 0))
+            screen.blit(ai_play_text, ai_play_text_rect)
 
         pygame.display.flip()
 
@@ -66,6 +67,8 @@ def show_start_screen():
                 for dimension, rect in dimension_buttons.items():
                     if rect.collidepoint(event.pos):
                         selected_dimension = dimension
-                if ai_play_checkbox_rect.collidepoint(event.pos):
+                        # Réinitialiser l'état de la case si "4x4" est sélectionné
+                        if selected_dimension == "4x4":
+                            ai_play_selected = False
+                if selected_dimension == "3x3" and ai_play_checkbox_rect.collidepoint(event.pos):
                     ai_play_selected = not ai_play_selected
-
