@@ -1,5 +1,7 @@
 import pygame
 import sys
+from ui.start_screen import show_start_screen  # Assurez-vous que show_start_screen est dans un fichier séparé
+
 
 def show_win_screen(screen, n):
     font = pygame.font.Font(None, 50)
