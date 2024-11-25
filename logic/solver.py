@@ -1,53 +1,27 @@
 import heapq
 import time
-import csv  # Bibliothèque pour écrire dans un fichier CSV
+import csv
 from datetime import datetime
 
-def solve_puzzle_with_astar(puzzle, n, heuristic, k=0):
-    """Résout le puzzle en utilisant l'algorithme A*."""
+
+def solve_puzzle_with_astar(puzzle):
+    """Résout le n-puzzle en utilisant l'algorithme A*."""
     n = len(puzzle)
     start = tuple(tuple(row) for row in puzzle)
-    goal = tuple(tuple((i * n + j + 1) % (n * n) for j in range(n)) for i in range(n))
+    goal = generate_goal_state(n)
 
     def heuristic(state):
-        """Calcule la distance de Manhattan pour une heuristique."""
+        """Calcule la distance de Manhattan comme heuristique."""
         distance = 0
         for r in range(len(state)):
             for c in range(len(state)):
                 value = state[r][c]
-                if value < 0 or value >= len(state) ** 2:
-                    raise ValueError(f"Valeur incorrecte dans le puzzle : {value}")
-                if value == 0:
-                    continue 
+                if value == 0:  # Ignorer la case vide
+                    continue
                 target_r, target_c = divmod(value - 1, len(state))
                 distance += abs(target_r - r) + abs(target_c - c)
         return distance
 
-    
-    def manhattan(state):
-        distance = 0
-        for r in range(n):
-            for c in range(n):
-                value = state[r][c]
-                if value == 0:
-                    continue
-                target_r, target_c = divmod(value - 1, n)
-                distance += abs(target_r - r) + abs(target_c - c)
-        return distance
-
-    def euclidean(state):
-        distance = 0
-        for r in range(n):
-            for c in range(n):
-                value = state[r][c]
-                if value == 0:
-                    continue
-                target_r, target_c = divmod(value - 1, n)
-                distance += ((target_r - r) ** 2 + (target_c - c) ** 2) ** 0.5
-        return distance
-    
-    h = manhattan if heuristic == "manhattan" else euclidean
-    
     def neighbors(state):
         """Génère les voisins possibles d'un état."""
         state = [list(row) for row in state]
@@ -60,24 +34,72 @@ def solve_puzzle_with_astar(puzzle, n, heuristic, k=0):
                 yield tuple(tuple(row) for row in state)
                 state[nr][nc], state[zero_row][zero_col] = state[zero_row][zero_col], state[nr][nc]
 
-    frontier = [(h(start), 0, start, [])]
+    # Début du calcul
+    start_time = time.time()
+    frontier = [(heuristic(start), 0, start, [])]
     explored = set()
-    move_count = 0  # Nombre de déplacements
+    move_count = 0
 
     while frontier:
         _, cost, current, path = heapq.heappop(frontier)
 
         if current == goal:
-            return {"path": path, "moves": cost, "success": True}
+            end_time = time.time()
+            execution_time = (end_time - start_time) * 1000  # Temps en millisecondes
+            move_count = len(path)
+            export_results(execution_time, move_count, success=True, n=n)
+            return path
 
         if current in explored:
             continue
 
         explored.add(current)
 
-        # Ajouter les voisins (avec ou sans k-swap)
-        for neighbor in neighbors(current, n, k):
+        for neighbor in neighbors(current):
             if neighbor not in explored:
-                heapq.heappush(frontier, (cost + 1 + h(neighbor), cost + 1, neighbor, path + [neighbor]))
+                heapq.heappush(frontier, (cost + 1 + heuristic(neighbor), cost + 1, neighbor, path + [neighbor]))
 
-    return {"success": False}  # Pas de solution
+    # Pas de solution trouvée
+    end_time = time.time()
+    execution_time = (end_time - start_time) * 1000
+    export_results(execution_time, move_count, success=False, n=n)
+    return None
+
+
+def generate_goal_state(n):
+    """Génère l'état final (objectif) pour une grille de taille n."""
+    return tuple(tuple((i * n + j + 1) % (n * n) for j in range(n)) for i in range(n))
+
+
+def export_results(execution_time, move_count, success, n):
+    """Export les résultats dans un fichier CSV."""
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    file_name = f"puzzle_results_{n}x{n}_{timestamp}.csv"
+
+    # Données à exporter
+    results = [
+        ["Puzzle Size", "Execution Time (ms)", "Move Count", "Success"],
+        [f"{n}x{n}", execution_time, move_count, "Yes" if success else "No"]
+    ]
+
+    with open(file_name, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerows(results)
+
+    print(f"Les résultats ont été exportés dans le fichier {file_name}")
+
+
+# Exemple d'exécution
+if __name__ == "__main__":
+    # Puzzle 3x3 exemple
+    puzzle = [
+        [1, 2, 3],
+        [4, 0, 6],
+        [7, 5, 8]
+    ]
+
+    solution = solve_puzzle_with_astar(puzzle)
+    if solution:
+        print("Solution trouvée avec succès !")
+    else:
+        print("Pas de solution possible.")
