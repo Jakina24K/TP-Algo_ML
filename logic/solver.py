@@ -1,4 +1,7 @@
 import heapq
+import time
+import csv  # Bibliothèque pour écrire dans un fichier CSV
+from datetime import datetime
 
 def solve_puzzle_with_astar(puzzle, n, heuristic, k=0):
     """Résout le puzzle en utilisant l'algorithme A*."""
@@ -59,6 +62,7 @@ def solve_puzzle_with_astar(puzzle, n, heuristic, k=0):
 
     frontier = [(h(start), 0, start, [])]
     explored = set()
+    move_count = 0  # Nombre de déplacements
 
     while frontier:
         _, cost, current, path = heapq.heappop(frontier)
