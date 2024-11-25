@@ -1,6 +1,6 @@
 import heapq
 
-def solve_puzzle_with_astar(puzzle):
+def solve_puzzle_with_astar(puzzle, n, heuristic, k=0):
     """Résout le puzzle en utilisant l'algorithme A*."""
     n = len(puzzle)
     start = tuple(tuple(row) for row in puzzle)
@@ -20,6 +20,31 @@ def solve_puzzle_with_astar(puzzle):
                 distance += abs(target_r - r) + abs(target_c - c)
         return distance
 
+    
+    def manhattan(state):
+        distance = 0
+        for r in range(n):
+            for c in range(n):
+                value = state[r][c]
+                if value == 0:
+                    continue
+                target_r, target_c = divmod(value - 1, n)
+                distance += abs(target_r - r) + abs(target_c - c)
+        return distance
+
+    def euclidean(state):
+        distance = 0
+        for r in range(n):
+            for c in range(n):
+                value = state[r][c]
+                if value == 0:
+                    continue
+                target_r, target_c = divmod(value - 1, n)
+                distance += ((target_r - r) ** 2 + (target_c - c) ** 2) ** 0.5
+        return distance
+    
+    h = manhattan if heuristic == "manhattan" else euclidean
+    
     def neighbors(state):
         """Génère les voisins possibles d'un état."""
         state = [list(row) for row in state]
@@ -32,22 +57,23 @@ def solve_puzzle_with_astar(puzzle):
                 yield tuple(tuple(row) for row in state)
                 state[nr][nc], state[zero_row][zero_col] = state[zero_row][zero_col], state[nr][nc]
 
-    frontier = [(heuristic(start), 0, start, [])]
+    frontier = [(h(start), 0, start, [])]
     explored = set()
 
     while frontier:
         _, cost, current, path = heapq.heappop(frontier)
 
         if current == goal:
-            return path
+            return {"path": path, "moves": cost, "success": True}
 
         if current in explored:
             continue
 
         explored.add(current)
 
-        for neighbor in neighbors(current):
+        # Ajouter les voisins (avec ou sans k-swap)
+        for neighbor in neighbors(current, n, k):
             if neighbor not in explored:
-                heapq.heappush(frontier, (cost + 1 + heuristic(neighbor), cost + 1, neighbor, path + [neighbor]))
+                heapq.heappush(frontier, (cost + 1 + h(neighbor), cost + 1, neighbor, path + [neighbor]))
 
-    return None  # Pas de solution
+    return {"success": False}  # Pas de solution
