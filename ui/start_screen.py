@@ -45,7 +45,7 @@ def show_start_screen():
                 draw_puzzle(screen, 4)
         else:
             # Texte principal
-            title = font.render("n-Puzzle", True, (0, 0, 0))
+            title = font.render("Chill Puzzle", True, (0, 0, 0))
             title_rect = title.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4))
             screen.blit(title, title_rect)
 
@@ -64,15 +64,16 @@ def show_start_screen():
                 screen.blit(text, text_rect)
 
             # Dessiner la case "Let the AI play"
-            pygame.draw.rect(screen, (0, 0, 0), ai_play_checkbox_rect, 2)
-            if ai_play_selected:
-                pygame.draw.line(screen, (0, 128, 0), ai_play_checkbox_rect.topleft, ai_play_checkbox_rect.bottomright, 2)
-                pygame.draw.line(screen, (0, 128, 0), ai_play_checkbox_rect.topright, ai_play_checkbox_rect.bottomleft, 2)
+            if selected_dimension == "3x3" :    
+                pygame.draw.rect(screen, (0, 0, 0), ai_play_checkbox_rect, 2)
+                if ai_play_selected:
+                    pygame.draw.line(screen, (0, 128, 0), ai_play_checkbox_rect.topleft, ai_play_checkbox_rect.bottomright, 2)
+                    pygame.draw.line(screen, (0, 128, 0), ai_play_checkbox_rect.topright, ai_play_checkbox_rect.bottomleft, 2)
 
-        ai_play_text = small_font.render("Let the AI play", True, (0, 0, 0))
-        screen.blit(ai_play_text, ai_play_text_rect)
+                ai_play_text = small_font.render("Let the AI play", True, (0, 0, 0))
+                screen.blit(ai_play_text, ai_play_text_rect)
 
-        pygame.display.flip()  # Mise à jour de l'écran
+            pygame.display.flip()  # Mise à jour de l'écran
 
         # Gestion des événements
         for event in pygame.event.get():
