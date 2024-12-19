@@ -9,10 +9,9 @@ TILE_SIZE = 100
 
 def draw_grid(screen, puzzle):
     n = len(puzzle)
-    font = pygame.font.Font(None, TILE_SIZE // 2)  # Police pour le texte
+    font = pygame.font.Font(None, TILE_SIZE // 2) 
 
-    # Couleur plus douce pour les contours (gris clair)
-    contour_color = (150, 150, 150)  # Gris clair pour les contours
+    contour_color = (150, 150, 150)
 
     for row in range(n):
         for col in range(n):
@@ -20,7 +19,6 @@ def draw_grid(screen, puzzle):
             rect = pygame.Rect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
 
             if value == 0:
-                # Case vide en blanc
                 pygame.draw.rect(screen, (255, 255, 255), rect)  # Fond blanc
             else:
                 # Cases normales en gris clair
@@ -53,18 +51,18 @@ def game_loop(n, ai_play=False):
             screen.fill((255, 255, 255))
             draw_grid(screen, puzzle)
             pygame.display.flip()
-            pygame.time.delay(200)  # Pause entre chaque étape
+            pygame.time.delay(200)
         
         result = show_win_screen(screen, n)
             
         if result == "start_again":
             return game_loop(n)
         elif result == "main_menu":
-            return show_start_screen()  # Affiche "You Win"
+            return show_start_screen()
         return
 
-    move_count = 0  # Compteur de mouvements
-    swap_mode = False  # Mode d'échange de tuiles
+    move_count = 0 
+    swap_mode = False
 
     while True:
         for event in pygame.event.get():
@@ -74,43 +72,37 @@ def game_loop(n, ai_play=False):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
                 if back_button_rect.collidepoint((x, y)):
-                    return  # Retourne à l'écran d'accueil
+                    return
                 if y < n * TILE_SIZE:
                     row, col = y // TILE_SIZE, x // TILE_SIZE
-                    if move_tile(puzzle, row, col):  # Déplacement valide
-                        move_count += 1  # Incrémente le compteur
+                    if move_tile(puzzle, row, col):
+                        move_count += 1
                         if move_count == 10:
-                            swap_mode = True  # Passe en mode "SWAP"
+                            swap_mode = True 
                         if check_win(puzzle):
                             result = show_win_screen(screen, n)
                             if result == "start_again":
-                                return game_loop(n)  # Relance le jeu avec la même dimension
+                                return game_loop(n)
                             elif result == "main_menu":
-                                # Rediriger vers l'écran principal
-                                return show_start_screen() # Retourne à l'écran d'accueil
+                                return show_start_screen()
 
-        # Mettre à jour l'écran
         screen.fill((255, 255, 255))  # Fond de l'écran
 
-        # Si le mode "SWAP" est activé, afficher "SWAP" au lieu de "Moves"
         if swap_mode:
             swap_text = font.render("SWAP", True, (255, 0, 0))
             screen.blit(swap_text, (10, n * TILE_SIZE + 10))
         else:
-            # Afficher le nombre de mouvements
             move_text = font.render(f"Moves: {move_count}", True, (0, 0, 0))
             screen.blit(move_text, (10, n * TILE_SIZE + 10))
 
-        # Dessiner la grille
         draw_grid(screen, puzzle)
 
-        pygame.display.flip()  # Met à jour l'affichage
+        pygame.display.flip() 
 
-        # Si le mode "SWAP" est activé, effectuer l'échange de tuiles
         if swap_mode:
             swap_tiles(puzzle, screen)
-            move_count = 0  # Réinitialise le compteur de mouvements après l'échange
-            swap_mode = False  # Désactive le mode "SWAP"
+            move_count = 0  
+            swap_mode = False 
 
 def swap_tiles(puzzle, screen):
     """Permet au joueur de permuter les valeurs de deux tuiles."""
@@ -133,7 +125,6 @@ def swap_tiles(puzzle, screen):
                     )
                     pygame.display.flip()
 
-    # Échanger les valeurs
     (row1, col1), (row2, col2) = selected_tiles
     puzzle[row1][col1], puzzle[row2][col2] = puzzle[row2][col2], puzzle[row1][col1]
 
