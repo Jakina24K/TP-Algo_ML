@@ -19,12 +19,16 @@ def check_winner(board):
         return "tie"
     
     return None
+
+
 def print_board(board):
     for i in range(0, 9, 3):
         row = [cell if cell else str(i + j) for j, cell in enumerate(board[i:i+3])]
         print(" | ".join(row))
         if i < 6:
             print("---------")
+
+
 
 def make_move(board, position, player):
     if board[position] == "":
@@ -33,22 +37,39 @@ def make_move(board, position, player):
     else:
         print("Case déjà prise. Choisis une autre.")
         return False
+    
+
 
 def switch_player(player):
     return "O" if player == "X" else "X"
 
-def get_player_input(board, player):
-    while True:
-        try:
-            position = int(input(f"Joueur {player}, choisis une case (0-8) : "))
-            if position < 0 or position > 8:
-                print("Numéro de case invalide.")
-            elif board[position] != "":
-                print("Case déjà prise.")
-            else:
-                return position
-        except ValueError:
-            print("Entrez un nombre entier.")
+
+def get_ai_move(board):
+    # À remplacer par ton algorithme IA
+    # Exemple très simple : première case libre
+    for i in range(9):
+        if board[i] == "":
+            return i
+
+
+def get_player_move(board, player):
+    if player == "X":
+        # Joueur humain
+        while True:
+            try:
+                position = int(input(f"Joueur {player}, choisis une case (0-8) : "))
+                if position < 0 or position > 8:
+                    print("Numéro de case invalide.")
+                elif board[position] != "":
+                    print("Case déjà prise.")
+                else:
+                    return position
+            except ValueError:
+                print("Entrez un nombre entier.")
+    else:
+        # IA
+        return get_ai_move(board)
+
 
 def main():
     board = [""] * 9
@@ -56,7 +77,7 @@ def main():
     
     while True:
         print_board(board)
-        pos = get_player_input(board, current_player)
+        pos = get_player_move(board, current_player)
         make_move(board, pos, current_player)
 
         result = check_winner(board)
@@ -69,6 +90,7 @@ def main():
             break
         
         current_player = switch_player(current_player)
+
 
 if __name__ == "__main__":
     main()
