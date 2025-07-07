@@ -26,21 +26,22 @@ pygame.display.set_caption("Tic Tac Toe")
 # Police très grosse et grasse
 font = pygame.font.SysFont("Arial", 90, bold=True)
 
-board = [["b" for _ in range(3)] for _ in range(3)]
+board = [["" for _ in range(3)] for _ in range(3)]
 current_player = "X"
 
 def check_win_positions():
     for i, row in enumerate(board):
-        if row[0] != "" and row.count(row[0]) == 3:
+        if row[0] != "b" and row.count(row[0]) == 3:
             return row[0], [(i, 0), (i, 1), (i, 2)]
     for col in range(3):
-        if board[0][col] != "" and board[0][col] == board[1][col] == board[2][col]:
+        if board[0][col] != "b" and board[0][col] == board[1][col] == board[2][col]:
             return board[0][col], [(0, col), (1, col), (2, col)]
-    if board[0][0] != "" and board[0][0] == board[1][1] == board[2][2]:
+    if board[0][0] != "b" and board[0][0] == board[1][1] == board[2][2]:
         return board[0][0], [(0, 0), (1, 1), (2, 2)]
-    if board[0][2] != "" and board[0][2] == board[1][1] == board[2][0]:
+    if board[0][2] != "b" and board[0][2] == board[1][1] == board[2][0]:
         return board[0][2], [(0, 2), (1, 1), (2, 0)]
     return None, None
+
 
 def draw_grid():
     screen.fill(BLUE)
@@ -65,7 +66,8 @@ def draw_grid():
                 pygame.draw.rect(cell_surface, bg_color + (255,), (0, 0, CELL_SIZE, CELL_SIZE), border_radius=18)
                 # Le symbole dans la même couleur que le fond (pour "effacer")
                 symbol = board[i][j]
-                if symbol:
+                if symbol != "b":
+
                     text = font.render(symbol, True, bg_color)
                     # Centrer le texte
                     text_pos = (
@@ -78,7 +80,8 @@ def draw_grid():
                 pygame.draw.rect(cell_surface, LIGHT_BLUE, (0, 0, CELL_SIZE, CELL_SIZE), border_radius=18)
                 # Dessiner le symbole normal (rouge ou jaune)
                 symbol = board[i][j]
-                if symbol:
+                if symbol != "b":
+
                     color = RED if symbol == "X" else YELLOW
                     text = font.render(symbol, True, color)
                     text_pos = (
@@ -116,7 +119,6 @@ def get_ai_move(b):
     print(aig)
     print(index_to_coords(aig))
     return index_to_coords(aig)
-    return None
 
 def main():
     global current_player, board
