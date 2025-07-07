@@ -1,6 +1,6 @@
 import pygame
 import sys
-
+import aigame
 pygame.init()
 
 # Couleurs
@@ -90,11 +90,23 @@ def draw_grid():
             screen.blit(cell_surface, (x, y))
 
     pygame.display.flip()
+def convertBoard(board):
+    return [cell for row in board for cell in row]
+
+def convertBoardBack(flat_board):
+    return [flat_board[i:i+3] for i in range(0, 9, 3)]
+
+def get_ai_move2(board):
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == "":
+                return i, j
+    return None
 
 def get_ai_move(board):
     for i in range(3):
         for j in range(3):
-            if board[i][j] == "":
+            if board[i][j] == aigame.ai_move(""):
                 return i, j
     return None
 
