@@ -102,6 +102,7 @@ def main():
     global current_player, board
     board = [["" for _ in range(3)] for _ in range(3)]
     current_player = "X"
+    counter = 0  # Compteur de coups joués
 
     clock = pygame.time.Clock()
     while True:
@@ -112,16 +113,25 @@ def main():
             winScreen.main(winner)
             return
 
+        # ✅ Vérifie égalité : 9 coups joués et aucun gagnant
+        if counter == 9:
+            import egalityScreen
+            egalityScreen.main()
+            return
+
+        # IA joue
         if current_player == "O":
-            pygame.time.delay(500) 
+            pygame.time.delay(200)
             move = get_ai_move(board)
             if move:
                 i, j = move
                 if board[i][j] == "":
                     board[i][j] = "O"
                     current_player = "X"
+                    counter += 1  # ✅ Incrémenter après un coup valide
             continue
 
+        # Joueur humain joue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -137,7 +147,9 @@ def main():
                             if board[i][j] == "":
                                 board[i][j] = "X"
                                 current_player = "O"
+                                counter += 1  # ✅ Incrémenter ici aussi
         clock.tick(60)
+
 
 
 if __name__ == "__main__":
