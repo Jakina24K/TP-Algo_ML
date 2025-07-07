@@ -1,7 +1,7 @@
 
 import pygame
 import sys
-
+import random
 pygame.init()
 
 # Couleurs
@@ -14,6 +14,30 @@ DARK_BLUE = (5, 5, 40)
 WIDTH, HEIGHT = 400, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Tic Tac Toe - Win Screen")
+
+class Particle:
+
+    def __init__(self):
+        self.x = random.randint(50, WIDTH - 50)
+        self.y = HEIGHT
+        self.radius = random.randint(2, 5)
+        self.color = random.choice([YELLOW, RED, WHITE])
+        self.speed_x = random.uniform(-1, 1)
+        self.speed_y = random.uniform(-4, -1)
+        self.gravity = 0.05
+        self.alpha = 255
+
+    def update(self):
+        self.x += self.speed_x
+        self.y += self.speed_y
+        self.speed_y += self.gravity
+        self.alpha -= 2  # disparaît lentement
+
+    def draw(self, surface):
+        if self.alpha > 0:
+            s = pygame.Surface((self.radius*2, self.radius*2), pygame.SRCALPHA)
+            pygame.draw.circle(s, self.color + (int(self.alpha),), (self.radius, self.radius), self.radius)
+            surface.blit(s, (int(self.x - self.radius), int(self.y - self.radius)))
 
 def draw_win_screen(winner):
     screen.fill(DARK_BLUE)
@@ -49,8 +73,26 @@ def draw_win_screen(winner):
     return button_rect
 
 def main(winner):
+    particles = [Particle() for _ in range(40)]  # 40 particules initiales
+    clock = pygame.time.Clock()
+
     while True:
+        screen.fill(DARK_BLUE)
         button_rect = draw_win_screen(winner)
+
+        # Mettre à jour et afficher les particules
+        for p in particles[:]:
+            p.update()
+            p.draw(screen)
+            if p.alpha <= 0:
+                particles.remove(p)
+
+        # En créer de nouvelles pour un effet continu
+        while len(particles) < 40:
+            particles.append(Particle())
+
+        pygame.display.flip()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -60,6 +102,9 @@ def main(winner):
                     import startScreen
                     startScreen.main()
                     return
+
+        clock.tick(60)
+
 
 if __name__ == "__main__":
     main("X")
