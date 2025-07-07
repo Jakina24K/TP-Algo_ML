@@ -6,6 +6,7 @@ pygame.init()
 # Couleurs
 BLUE = (10, 10, 63)
 YELLOW = (255, 215, 0)
+YELLOW_HOVER = (255, 240, 100)
 RED = (255, 60, 56)
 WHITE = (255, 255, 255)
 DARK_BLUE = (5, 5, 40)
@@ -21,7 +22,7 @@ def draw_start_screen():
     # Police stylée et grasse
     title_font = pygame.font.SysFont("impact", 80, bold=True)
     subtitle_font = pygame.font.SysFont("segoeui", 24, italic=True)
-    button_font = pygame.font.SysFont("impact", 42, bold=True)
+    font_button = pygame.font.SysFont("arial", 36, bold=True)
 
     # Texte principal
     title_text = ["TIC", "TAC", "TOE"]
@@ -49,20 +50,20 @@ def draw_start_screen():
     subtitle_surf = subtitle_font.render(subtitle, True, WHITE)
     screen.blit(subtitle_surf, (WIDTH // 2 - subtitle_surf.get_width() // 2, start_y + 280))
 
-    # Bouton START
-    button_width, button_height = 120, 45
+    # Bouton START (mêmes dimensions et style que RESTART dans win.py)
+    button_width, button_height = 200, 60
     button_x = WIDTH // 2 - button_width // 2
     button_y = 450
     button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
 
-    # Couleur plus douce + survol
+    # Couleur jaune et jaune clair au survol
     mouse_pos = pygame.mouse.get_pos()
-    button_color = (255, 215, 100) if button_rect.collidepoint(mouse_pos) else (255, 200, 80)
+    button_color = YELLOW_HOVER if button_rect.collidepoint(mouse_pos) else YELLOW
 
-    pygame.draw.rect(screen, button_color, button_rect, border_radius=10)
+    pygame.draw.rect(screen, button_color, button_rect, border_radius=15)
 
-    # Texte START (simple et centré)
-    text = button_font.render("START", True, DARK_BLUE)
+    # Texte START centré et en bleu foncé
+    text = font_button.render("START", True, DARK_BLUE)
     text_x = button_x + (button_width - text.get_width()) // 2
     text_y = button_y + (button_height - text.get_height()) // 2
     screen.blit(text, (text_x, text_y))

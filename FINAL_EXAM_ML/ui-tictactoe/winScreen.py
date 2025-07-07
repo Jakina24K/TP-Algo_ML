@@ -11,7 +11,7 @@ RED = (255, 60, 56)
 WHITE = (255, 255, 255)
 DARK_BLUE = (5, 5, 40)
 
-WIDTH, HEIGHT = 400, 600
+WIDTH, HEIGHT = 450, 650
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Tic Tac Toe - Win Screen")
 
@@ -42,52 +42,65 @@ class Particle:
 def draw_win_screen(winner):
     screen.fill(DARK_BLUE)
 
-    # Police plus simple, plus petite, sans gras
-    font_big = pygame.font.SysFont("arial", 50)  # taille 50, pas bold
-    font_button = pygame.font.SysFont("arial", 36, bold=True)  # bouton un peu plus grand
+    font_big = pygame.font.SysFont("arial", 50)
+    font_button = pygame.font.SysFont("arial", 36, bold=True)
 
-    # Message gagnant avec couleurs conditionnelles
     text_color = YELLOW if winner == "O" else RED
     win_message = f"Player {winner} Wins!"
     text_surf = font_big.render(win_message, True, text_color)
     screen.blit(text_surf, (WIDTH // 2 - text_surf.get_width() // 2, HEIGHT // 3 - 30))
 
-    # Bouton RESTART
+    # ==== RESTART BUTTON ====
     button_width, button_height = 180, 50
     button_x = WIDTH // 2 - button_width // 2
-    button_y = HEIGHT // 2 + 60
-    button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+    restart_y = HEIGHT // 2 + 60
+    restart_rect = pygame.Rect(button_x, restart_y, button_width, button_height)
 
-    # Bouton jaune avec ombre et arrondi
+    # ==== EXIT BUTTON ====
+    exit_y = restart_y + button_height + 20
+    exit_rect = pygame.Rect(button_x, exit_y, button_width, button_height)
+
+    # Bouton RESTART
     mouse_pos = pygame.mouse.get_pos()
-    button_color = (255, 240, 100) if button_rect.collidepoint(mouse_pos) else (255, 215, 0)
-    pygame.draw.rect(screen, button_color, button_rect, border_radius=12)
+    restart_color = (255, 240, 100) if restart_rect.collidepoint(mouse_pos) else (255, 215, 0)
+    pygame.draw.rect(screen, restart_color, restart_rect, border_radius=12)
 
-    # Texte RESTART centré et coloré en bleu foncé
     text_restart = font_button.render("RESTART", True, DARK_BLUE)
     screen.blit(text_restart, (button_x + (button_width - text_restart.get_width()) // 2,
-                               button_y + (button_height - text_restart.get_height()) // 2))
+                               restart_y + (button_height - text_restart.get_height()) // 2))
+
+    # Bouton EXIT
+    exit_color = (255, 100, 100) if exit_rect.collidepoint(mouse_pos) else (200, 50, 50)
+    pygame.draw.rect(screen, exit_color, exit_rect, border_radius=12)
+
+    text_exit = font_button.render("EXIT", True, WHITE)
+    screen.blit(text_exit, (button_x + (button_width - text_exit.get_width()) // 2,
+                            exit_y + (button_height - text_exit.get_height()) // 2))
 
     pygame.display.flip()
 
-    return button_rect
+    return restart_rect, exit_rect
 
 def main(winner):
-    particles = [Particle() for _ in range(40)]  # 40 particules initiales
+    import gameScreen 
+    particles = [Particle() for _ in range(40)]
     clock = pygame.time.Clock()
+    running = True
 
-    while True:
+    while running:
         screen.fill(DARK_BLUE)
-        button_rect = draw_win_screen(winner)
+        restart_rect, exit_rect = draw_win_screen(winner)
 
-        # Mettre à jour et afficher les particules
-        for p in particles[:]:
+        # Mise à jour et dessin des particules (sans modifier la liste en boucle)
+        to_remove = []
+        for p in particles:
             p.update()
             p.draw(screen)
             if p.alpha <= 0:
-                particles.remove(p)
+                to_remove.append(p)
+        for p in to_remove:
+            particles.remove(p)
 
-        # En créer de nouvelles pour un effet continu
         while len(particles) < 40:
             particles.append(Particle())
 
@@ -95,15 +108,20 @@ def main(winner):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if button_rect.collidepoint(event.pos):
-                    import startScreen
-                    startScreen.main()
+                if restart_rect.collidepoint(event.pos):
+                    gameScreen.main()
                     return
+                elif exit_rect.collidepoint(event.pos):
+                    running = False
 
         clock.tick(60)
+
+    # Quitte proprement
+    pygame.quit()
+    sys.exit()
+
 
 
 if __name__ == "__main__":
