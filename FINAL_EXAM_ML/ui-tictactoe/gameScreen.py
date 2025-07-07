@@ -96,6 +96,12 @@ def convertBoard(board):
 def convertBoardBack(flat_board):
     return [flat_board[i:i+3] for i in range(0, 9, 3)]
 
+def index_to_coords(index):
+    return index // 3, index % 3
+
+def coords_to_index(i, j):
+    return i * 3 + j
+
 def get_ai_move2(board):
     for i in range(3):
         for j in range(3):
@@ -103,11 +109,13 @@ def get_ai_move2(board):
                 return i, j
     return None
 
-def get_ai_move(board):
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] == aigame.ai_move(""):
-                return i, j
+def get_ai_move(b):
+    _b = convertBoard(b)
+    print(_b)
+    aig = aigame.ai_move(_b)
+    print(aig)
+    print(index_to_coords(aig))
+    return index_to_coords(aig)
     return None
 
 def main():
@@ -135,6 +143,7 @@ def main():
         if current_player == "O":
             pygame.time.delay(200)
             move = get_ai_move(board)
+            print(move)
             if move:
                 i, j = move
                 if board[i][j] == "":

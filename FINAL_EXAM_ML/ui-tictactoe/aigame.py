@@ -39,7 +39,7 @@ def ai_move(b):
     classes = model.classes_
 
     # Filtrer les coups légaux uniquement
-    legal_moves = [i for i in range(9) if b[i] == 'b']
+    legal_moves = [i for i in range(9) if b[i] == '']
 
     # Associer chaque classe connue à sa proba
     class_proba_map = {int(c): p for c, p in zip(classes, proba)}
