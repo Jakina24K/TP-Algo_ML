@@ -91,19 +91,42 @@ def draw_grid():
 
     pygame.display.flip()
 
+def get_ai_move(board):
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == "":
+                return i, j
+    return None
+
 def main():
     global current_player, board
-    board = [["" for _ in range(3)] for _ in range(3)]  # Reset board at start
+    board = [["" for _ in range(3)] for _ in range(3)]
     current_player = "X"
 
     clock = pygame.time.Clock()
     while True:
         draw_grid()
+        winner, _ = check_win_positions()
+        if winner:
+            import winScreen
+            winScreen.main(winner)
+            return
+
+        if current_player == "O":
+            pygame.time.delay(500) 
+            move = get_ai_move(board)
+            if move:
+                i, j = move
+                if board[i][j] == "":
+                    board[i][j] = "O"
+                    current_player = "X"
+            continue
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and current_player == "X":
                 x, y = event.pos
                 for i in range(3):
                     for j in range(3):
@@ -112,14 +135,10 @@ def main():
                         rect = pygame.Rect(cell_x, cell_y, CELL_SIZE, CELL_SIZE)
                         if rect.collidepoint(x, y):
                             if board[i][j] == "":
-                                board[i][j] = current_player
-                                winner, _ = check_win_positions()
-                                if winner:
-                                    import winScreen
-                                    winScreen.main(winner)
-                                    return
-                                current_player = "O" if current_player == "X" else "X"
+                                board[i][j] = "X"
+                                current_player = "O"
         clock.tick(60)
+
 
 if __name__ == "__main__":
     main()
