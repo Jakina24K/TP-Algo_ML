@@ -26,7 +26,7 @@ pygame.display.set_caption("Tic Tac Toe")
 # Police très grosse et grasse
 font = pygame.font.SysFont("Arial", 90, bold=True)
 
-board = [["" for _ in range(3)] for _ in range(3)]
+board = [["b" for _ in range(3)] for _ in range(3)]
 current_player = "X"
 
 def check_win_positions():
@@ -120,7 +120,7 @@ def get_ai_move(b):
 
 def main():
     global current_player, board
-    board = [["" for _ in range(3)] for _ in range(3)]
+    board = [["b" for _ in range(3)] for _ in range(3)]
     current_player = "X"
     counter = 0  # Compteur de coups joués
 
@@ -146,7 +146,7 @@ def main():
             print(move)
             if move:
                 i, j = move
-                if board[i][j] == "":
+                if board[i][j] == "b":
                     board[i][j] = "O"
                     current_player = "X"
                     counter += 1  # ✅ Incrémenter après un coup valide
@@ -165,7 +165,7 @@ def main():
                         cell_y = GRID_ORIGIN_Y + i * (CELL_SIZE + MARGIN)
                         rect = pygame.Rect(cell_x, cell_y, CELL_SIZE, CELL_SIZE)
                         if rect.collidepoint(x, y):
-                            if board[i][j] == "":
+                            if board[i][j] == "b":
                                 board[i][j] = "X"
                                 current_player = "O"
                                 counter += 1  # ✅ Incrémenter ici aussi
