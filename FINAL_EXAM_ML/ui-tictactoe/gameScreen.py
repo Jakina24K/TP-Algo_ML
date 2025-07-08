@@ -68,8 +68,8 @@ def create_player_card(title, symbol, main_color, symbol_color):
 
 
 # Création des deux cartes identiques en style mais avec des couleurs et symboles différents
-player_card = create_player_card("YOU", "X", (60, 60, 120), RED)
-robot_card = create_player_card("ROBOT", "O", (60, 60, 120), YELLOW)
+player_card = create_player_card("YOU", "x", (60, 60, 120), RED)
+robot_card = create_player_card("ROBOT", "o", (60, 60, 120), YELLOW)
 
 # Positions des cartes
 PLAYER_CARD_POS = (WIDTH//4 - CARD_WIDTH//2, 30)
@@ -77,7 +77,7 @@ ROBOT_CARD_POS = (3*WIDTH//4 - CARD_WIDTH//2, 30)
 
 # État du jeu
 board = [["" for _ in range(3)] for _ in range(3)]
-current_player = "X"
+current_player = "x"
 
 def check_win_positions():
     """Vérifie les conditions de victoire"""
@@ -110,8 +110,8 @@ def draw_grid():
     screen.blit(robot_card, ROBOT_CARD_POS)
     
     # Bordure pour le joueur actif
-    active_color = RED if current_player == "X" else YELLOW
-    active_pos = PLAYER_CARD_POS if current_player == "X" else ROBOT_CARD_POS
+    active_color = RED if current_player == "x" else YELLOW
+    active_pos = PLAYER_CARD_POS if current_player == "x" else ROBOT_CARD_POS
     pygame.draw.rect(screen, active_color, 
                     (active_pos[0]-3, active_pos[1]-3, 
                      CARD_WIDTH+6, CARD_HEIGHT+6), 
@@ -134,7 +134,7 @@ def draw_grid():
             cell = pygame.Surface((CELL_SIZE, CELL_SIZE), pygame.SRCALPHA)
             
             if win_positions and (i, j) in win_positions:
-                bg_color = (*YELLOW[:3], 200) if winner == "O" else (*RED[:3], 200)
+                bg_color = (*YELLOW[:3], 200) if winner == "o" else (*RED[:3], 200)
                 pygame.draw.rect(cell, bg_color, (0, 0, CELL_SIZE, CELL_SIZE), border_radius=BORDER_RADIUS)
             else:
                 pygame.draw.rect(cell, LIGHT_BLUE, (0, 0, CELL_SIZE, CELL_SIZE), border_radius=BORDER_RADIUS)
@@ -143,7 +143,7 @@ def draw_grid():
             # Symbole
             symbol = board[i][j]
             if symbol != "b":
-                color = RED if symbol == "X" else YELLOW
+                color = RED if symbol == "x" else YELLOW
                 text = symbol_font.render(symbol, True, color)
                 cell.blit(text, ((CELL_SIZE - text.get_width()) // 2, 
                             (CELL_SIZE - text.get_height()) // 2))
@@ -182,7 +182,7 @@ def get_ai_move(b):
 def main():
     global current_player, board
     board = [["b" for _ in range(3)] for _ in range(3)]
-    current_player = "X"
+    current_player = "x"
     counter = 0  # Compteur de coups joués
 
     clock = pygame.time.Clock()
@@ -201,15 +201,15 @@ def main():
             return
 
         # IA joue
-        if current_player == "O":
+        if current_player == "o":
             pygame.time.delay(200)
             move = get_ai_move(board)
             print(move)
             if move:
                 i, j = move
                 if board[i][j] == "b":
-                    board[i][j] = "O"
-                    current_player = "X"
+                    board[i][j] = "o"
+                    current_player = "x"
                     counter += 1  # ✅ Incrémenter après un coup valide
             continue
 
@@ -218,7 +218,7 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN and current_player == "X":
+            elif event.type == pygame.MOUSEBUTTONDOWN and current_player == "x":
                 x, y = event.pos
                 for i in range(3):
                     for j in range(3):
@@ -227,8 +227,8 @@ def main():
                         rect = pygame.Rect(cell_x, cell_y, CELL_SIZE, CELL_SIZE)
                         if rect.collidepoint(x, y):
                             if board[i][j] == "b":
-                                board[i][j] = "X"
-                                current_player = "O"
+                                board[i][j] = "x"
+                                current_player = "o"
                                 counter += 1  # ✅ Incrémenter ici aussi
         clock.tick(60)
 
