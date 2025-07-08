@@ -1,7 +1,7 @@
 import joblib
 import pandas as pd
 
-model = joblib.load(r"/home/steddy/Bureau/TpFinalExamen/TP-Algo_ML/FINAL_EXAM_ML/Server/tictactoe_ai_model.pkl")
+model = joblib.load(r"C:\Users\ASUS\Desktop\ISPM_ML\TP-Algo_ML\FINAL_EXAM_ML\Server\tictactoe_ai_model.pkl")
 
 board = ['b'] * 9
 
